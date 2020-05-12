@@ -18,7 +18,7 @@ app.use(cors());
 app.use("/api",apiRoute);
 
 //DB connection
-const dbParams = { useNewUrlParser: true, useUnifiedTopology: true };
+const dbParams = { useNewUrlParser: true, useUnifiedTopology: true ,useCreateIndex:true};
 mongoose.connect(process.env.DB_URI, dbParams, () => {
   console.log("Database Connection Succesful!");
 });
