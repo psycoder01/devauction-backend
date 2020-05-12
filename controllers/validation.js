@@ -12,7 +12,7 @@ const register = (data) => {
 const login = (data) => {
   const schema = Joi.object({
     email: Joi.string().required(),
-    password: Joi.string().require().min(8),
+    password: Joi.string().required().min(8),
   });
   return schema.validate(data);
 };
