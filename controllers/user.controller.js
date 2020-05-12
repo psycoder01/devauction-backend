@@ -6,6 +6,10 @@ const User = require("../models/user.schema");
 
 const register = async (req, res) => {
   //Validating user data
+  const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (!req.body.email.match(regEx))
+    return res.status(400).send("Email not valid");
+
   const { error } = validator.register(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -34,6 +38,11 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
+  //Email Pattern Check
+  const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (!req.body.email.match(regEx))
+    return res.status(400).send("Email not valid");
+
   //Validating user data
   const { error } = validator.login(req.body);
   if (error) return res.status(400).send(error.details[0].message);
