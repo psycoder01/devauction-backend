@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const validator = require("./validation");
+const main = require('../config/index');
 
 const User = require("../models/user.schema");
 
@@ -26,6 +27,7 @@ const register = async (req, res) => {
     name: req.body.name,
     email: req.body.email,
     password: hashPass,
+    imgUrl : `${main}/public/default.jpg`
   });
 
   //Saving the user data

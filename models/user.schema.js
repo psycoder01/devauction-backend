@@ -15,6 +15,9 @@ const userSchema = new mong.Schema(
       type: String,
       required: true,
     },
+    imgUrl :{
+      type:String
+    }
   },
   { timestamps: true }
 );
