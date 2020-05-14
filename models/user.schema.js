@@ -17,6 +17,12 @@ const userSchema = new mong.Schema(
     },
     imgUrl :{
       type:String
+    },
+    bio:{
+      type:String
+    },
+    location:{
+      type:String
     }
   },
   { timestamps: true }

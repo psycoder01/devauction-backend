@@ -4,9 +4,21 @@ const main = require("../config/index");
 
 const readUser = (req, res) => {};
 
+//Updating User Details
 const updateUser = (req, res) => {
-  // User.findById(req.user).then(item => item.imageUrl = `${imgDirectory}/`
-  // )
+  let userDetails = {};
+  //checking for empty values
+  if (!req.body.bio.trim()) userDetails.bio = req.body.bio;
+  if (!req.body.location.trim()) userDetails.location = req.body.location;
+
+  User.findOneAndUpdate(
+    req.user.id,
+    {
+      bio: req.body.bio,
+      location: req.body.location,
+    },
+    { new: true }
+  ).then(()=> res.send("Updated Details")).catch((err) => res.send("Error Updating Info"));
 };
 
 const deleteUser = (req, res) => {};
@@ -27,7 +39,7 @@ const imageUpload = (req, res) => {
     })
     .catch((err) => res.status(400).send("Error: " + err));
 
-    return res.send('Avatar Updated Successfully');
+  return res.send("Avatar Updated Successfully");
 };
 
-module.exports = { imageUpload };
+module.exports = { imageUpload, updateUser };
