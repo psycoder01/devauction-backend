@@ -1,6 +1,6 @@
 const mong = require("mongoose");
 
-const userSchema = new mong.Schema(
+const postSchema = new mong.Schema(
   {
     title: {
       type: String,
@@ -11,12 +11,15 @@ const userSchema = new mong.Schema(
       required: true,
     },
     imgUrl: {
-      type: String,
-      required: true,
+      type: String
     },
+    userId:{
+      type:String,
+      required:true
+    }
   },
   { timestamps: true }
 );
 
-const User = mong.model('Users',userSchema);
-module.exports = User;
+const Posts = mong.model('Posts',postSchema);
+module.exports = Posts;

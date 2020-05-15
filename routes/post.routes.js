@@ -1,8 +1,10 @@
 const router = require("express").Router();
 const verify = require("../middlewares/verifyToken");
 
-router.get("/", verify, (req, res) => {
-  res.send("post route entered");
-});
+const {addPost,getPost,getAllPost} =require('../controllers/post.controller');
+
+router.get("/",getAllPost);
+router.post('/',verify,addPost);
+router.get('/:id',getPost);
 
 module.exports = router;
