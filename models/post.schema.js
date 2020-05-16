@@ -16,6 +16,14 @@ const postSchema = new mong.Schema(
     userId:{
       type:String,
       required:true
+    },
+    likes:{
+      type:Number,
+      default:0
+    },
+    comments:{
+      type:Number,
+      default:0
     }
   },
   { timestamps: true }
