@@ -41,8 +41,23 @@ const addComment = (req, res) => {
 
   newComment
     .save()
-    .then((data) => res.send(data))
+    .then(() => {
+      Post.findByIdAndUpdate(req.params.id, {
+        $inc: { commentsCount: 1 },
+      }).catch((err) => res.send(err));
+      res.send("Comment Added");
+    })
     .catch((err) => res.status(400).send("Error : " + err));
+};
+const removeComment = async (req, res) => {
+  Comment.findOneAndDelete({body:req.body.body})
+    .then(() => {
+      Post.findByIdAndUpdate(req.params.id, {
+        $inc: { commentsCount: -1 },
+      }).catch((err) => res.send(err));
+      res.send("Comment Removed");
+    })
+    .catch((err) => res.send(err));
 };
 
 //Likes controller
@@ -58,6 +73,9 @@ const like = async (req, res) => {
       });
 
       newLike.save().then(() => {
+        Post.findByIdAndUpdate(req.params.id, {
+          $inc: { likesCount: 1 },
+        }).catch((err) => res.send(err));
         res.send("Post Liked!");
       });
     })
@@ -70,9 +88,12 @@ const unlike = async (req, res) => {
   await Likes.find(query)
     .then((item) => {
       if (item.length > 0)
-        return Likes.findByIdAndDelete(item[0]._id).then(() =>
-          res.send("Post Disliked")
-        );
+        return Likes.findByIdAndDelete(item[0]._id).then(() => {
+          Post.findByIdAndUpdate(req.params.id, {
+            $inc: { likesCount: -1 },
+          }).catch((err) => res.send(err));
+          res.send("Post Disliked");
+        });
       return res.status(400).send("Post not found");
     })
     .catch((err) => {
@@ -85,6 +106,7 @@ module.exports = {
   addPost,
   deletePost,
   addComment,
+  removeComment,
   like,
   unlike,
 };

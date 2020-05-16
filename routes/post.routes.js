@@ -6,7 +6,9 @@ const {
   getPost,
   getAllPost,
   addComment,
-  like,unlike
+  removeComment,
+  like,
+  unlike,
 } = require("../controllers/post.controller");
 
 router.get("/", getAllPost);
@@ -15,9 +17,10 @@ router.get("/:id", getPost);
 
 //Comment routes
 router.post("/:id/comment", verify, addComment);
+router.delete("/:id/uncomment", verify, removeComment);
 
 //Like And Unlike Routes
-router.post("/:id/like",verify,like);
-router.post('/:id/unlike',verify,unlike)
+router.post("/:id/like", verify, like);
+router.post("/:id/unlike", verify, unlike);
 
 module.exports = router;

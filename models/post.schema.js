@@ -17,11 +17,11 @@ const postSchema = new mong.Schema(
       type:String,
       required:true
     },
-    likes:{
+    likesCount:{
       type:Number,
       default:0
     },
-    comments:{
+    commentsCount:{
       type:Number,
       default:0
     }
