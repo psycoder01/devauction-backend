@@ -6,7 +6,11 @@ const getAllPost = (req, res) => {
     .catch((err) => res.json("Error : ", err));
 };
 
-const getPost = (req, res) => {};
+const getPost = (req, res) => {
+  Post.findById(req.params.id)
+    .then((result) => res.send(result))
+    .catch((err) => res.status(400).send("Error : ", err));
+};
 
 const addPost = async (req, res) => {
   const newPost = new Post({
