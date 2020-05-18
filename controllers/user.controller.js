@@ -11,17 +11,18 @@ const findUser = (req, res) => {
     .catch((err) => res.status(400).send(err));
 };
 
-const getUser = async(req, res) => {
+const getUser = async (req, res) => {
   let userDetails = {};
-  await User.findById(req.user.id)
+  User.findById(req.user.id)
     .then((data) => {
       userDetails.credentials = data;
       return Likes.find({ userId: req.user.id });
     })
-    .then((data) => (userDetails.likes = data))
+    .then((data) => {
+      userDetails.likes = data;
+      res.json(userDetails);
+    })
     .catch((err) => res.status(400).send("Error : " + err));
-
-  res.json(userDetails);
 };
 
 //Updating User Details
