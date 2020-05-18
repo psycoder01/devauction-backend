@@ -10,8 +10,16 @@ const getAllPost = (req, res) => {
 };
 
 const getPost = (req, res) => {
+  let postDetails = {};
   Post.findById(req.params.id)
-    .then((result) => res.send(result))
+    .then((result) => {
+      postDetails.details = result;
+      return Comment.find({ postId: req.params.id });
+    })
+    .then((result) => {
+      postDetails.comments = result.sort((a,b) => b.createdAt - a.createdAt);
+      res.json(postDetails);
+    })
     .catch((err) => res.status(400).send("Error : " + err));
 };
 
@@ -50,7 +58,7 @@ const addComment = (req, res) => {
     .catch((err) => res.status(400).send("Error : " + err));
 };
 const removeComment = async (req, res) => {
-  Comment.findOneAndDelete({body:req.body.body})
+  Comment.findOneAndDelete({ body: req.body.body })
     .then(() => {
       Post.findByIdAndUpdate(req.params.id, {
         $inc: { commentsCount: -1 },
