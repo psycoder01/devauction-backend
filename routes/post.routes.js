@@ -5,6 +5,7 @@ const {
   addPost,
   getPost,
   getAllPost,
+  deletePost,
   addComment,
   removeComment,
   like,
@@ -14,6 +15,7 @@ const {
 //Post Routes
 router.get("/", getAllPost);
 router.post("/", verify, addPost);
+router.delete('/:id',verify,deletePost)
 router.get("/:id", getPost);
 
 //Comment routes

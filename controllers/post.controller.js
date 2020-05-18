@@ -8,7 +8,7 @@ const getAllPost = (req, res) => {
     .then((post) => res.json(post))
     .catch((err) => res.json("Error : " + err));
 };
-
+//Getting a single post details
 const getPost = (req, res) => {
   let postDetails = {};
   Post.findById(req.params.id)
@@ -17,12 +17,12 @@ const getPost = (req, res) => {
       return Comment.find({ postId: req.params.id });
     })
     .then((result) => {
-      postDetails.comments = result.sort((a,b) => b.createdAt - a.createdAt);
+      postDetails.comments = result.sort((a, b) => b.createdAt - a.createdAt);
       res.json(postDetails);
     })
     .catch((err) => res.status(400).send("Error : " + err));
 };
-
+//Adding a post
 const addPost = async (req, res) => {
   const newPost = new Post({
     title: req.body.title,
@@ -37,7 +37,19 @@ const addPost = async (req, res) => {
     res.status(400).send("Error : " + err);
   }
 };
-const deletePost = (req, res) => {};
+
+//Delete post
+const deletePost = (req, res) => {
+  Post.findByIdAndDelete(req.params.id)
+    .then(() =>
+      Promise.all([
+        Likes.deleteMany({ postId: req.params.id }),
+        Comment.deleteMany({ postId: req.params.id }),
+      ])
+    )
+    .then(() => res.send("Post deleted successfully"))
+    .catch((err) => res.status(400).send("Error " + err));
+};
 
 //Comment Controllers
 const addComment = (req, res) => {
