@@ -11,6 +11,7 @@ const {
   unlike,
 } = require("../controllers/post.controller");
 
+//Post Routes
 router.get("/", getAllPost);
 router.post("/", verify, addPost);
 router.get("/:id", getPost);

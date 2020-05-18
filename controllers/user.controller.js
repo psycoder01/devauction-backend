@@ -1,8 +1,28 @@
 const upload = require("./multer");
 const User = require("../models/user.schema");
+const Post = require("../models/post.schema");
+const Likes = require("../models/likes");
+const Comment = require("../models/comments");
 const main = require("../config/index");
 
-const readUser = (req, res) => {};
+const findUser = (req, res) => {
+  User.find({ name: req.params.name })
+    .then((data) => res.send(data))
+    .catch((err) => res.status(400).send(err));
+};
+
+const getUser = async(req, res) => {
+  let userDetails = {};
+  await User.findById(req.user.id)
+    .then((data) => {
+      userDetails.credentials = data;
+      return Likes.find({ userId: req.user.id });
+    })
+    .then((data) => (userDetails.likes = data))
+    .catch((err) => res.status(400).send("Error : " + err));
+
+  res.json(userDetails);
+};
 
 //Updating User Details
 const updateUser = (req, res) => {
@@ -18,10 +38,15 @@ const updateUser = (req, res) => {
       location: req.body.location,
     },
     { new: true }
-  ).then(()=> res.send("Updated Details")).catch((err) => res.send("Error Updating Info"));
+  )
+    .then(() => res.send("Updated Details"))
+    .catch((err) => res.send("Error Updating Info"));
 };
 
-const deleteUser = (req, res) => {};
+//Deleting a User
+const deleteUser = (req, res) => {
+  res.send("Deleting a user can take about 1 week !");
+};
 
 //Image upload controller
 const imageUpload = (req, res) => {
@@ -42,4 +67,4 @@ const imageUpload = (req, res) => {
   return res.send("Avatar Updated Successfully");
 };
 
-module.exports = { imageUpload, updateUser };
+module.exports = { imageUpload, updateUser, deleteUser, getUser, findUser };
