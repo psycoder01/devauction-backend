@@ -75,6 +75,10 @@ const addComment = (req, res) => {
       res.send("Comment Added");
     })
     .catch((err) => res.status(400).send("Error : " + err));
+
+  notifOnComment(req.user.name, req.params.id).catch((err) =>
+    console.error(err)
+  );
 };
 const removeComment = async (req, res) => {
   Comment.findOneAndDelete({ body: req.body.body })
@@ -85,6 +89,10 @@ const removeComment = async (req, res) => {
       res.send("Comment Removed");
     })
     .catch((err) => res.send(err));
+
+  notifOnUncomment(req.user.name, req.params.id).catch((err) =>
+    console.error(err)
+  );
 };
 
 //Likes controller

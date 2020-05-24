@@ -21,7 +21,25 @@ const notifOnLike = async (from, to) => {
     console.log(err);
   }
 };
-const notifOnComment = async () => {};
+const notifOnComment = async (from, to) => {
+  try {
+    let recipient = "";
+    await Posts.findById(to)
+      .then((result) => User.findById(result.userId))
+      .then((result) => (recipient = result.name));
+
+    const newNotif = new Notif({
+      sender: from,
+      recipient: recipient,
+      action: "comment",
+      postId: to,
+    });
+
+    newNotif.save().then(() => console.log("notifications saved"));
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 const notifOnUnlike = async (from, to) => {
   try {
@@ -30,15 +48,39 @@ const notifOnUnlike = async (from, to) => {
       .then((result) => User.findById(result.userId))
       .then((result) => (recipient = result.name));
 
-    let query = { sender: from, postId: to, recipient: recipient };
+    let query = {
+      sender: from,
+      postId: to,
+      recipient: recipient,
+      action: "like",
+    };
     Notif.findOneAndDelete(query).then(() =>
-      console.log("Notification Deleted!")
+      console.log("Like Notification Deleted!")
     );
   } catch (err) {
     console.log(err);
   }
 };
-const notifOnUncomment = async () => {};
+const notifOnUncomment = async (from, to) => {
+  try {
+    let recipient = "";
+    await Posts.findById(to)
+      .then((result) => User.findById(result.userId))
+      .then((result) => (recipient = result.name));
+
+    let query = {
+      sender: from,
+      postId: to,
+      recipient: recipient,
+      action: "comment",
+    };
+    Notif.findOneAndDelete(query).then(() =>
+      console.log("Comment Notification Deleted!")
+    );
+  } catch (err) {
+    console.log(err);
+  }
+};
 module.exports = {
   notifOnLike,
   notifOnComment,
