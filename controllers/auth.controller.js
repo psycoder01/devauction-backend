@@ -58,7 +58,7 @@ const login = async (req, res) => {
   if (!validPass) return res.status(400).send("Incorret Credentials!");
 
   //Token
-  const token = jwt.sign({ id: user._id }, process.env.TOKEN);
+  const token = jwt.sign({ id: user._id ,name:user.name}, process.env.TOKEN);
   res.header("authorization", token).send(token);
 };
 

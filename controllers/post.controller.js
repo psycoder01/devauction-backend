@@ -2,6 +2,8 @@ const Post = require("../models/post.schema");
 const Comment = require("../models/comments");
 const Likes = require("../models/likes");
 
+const { notifOnLike, notifOnComment } = require("./notifications");
+
 //Posts Controller
 const getAllPost = (req, res) => {
   Post.find()
@@ -9,9 +11,9 @@ const getAllPost = (req, res) => {
     .catch((err) => res.json("Error : " + err));
 };
 //Getting a single post details
-const getPost = (req, res) => {
+const getPost = async (req, res) => {
   let postDetails = {};
-  Post.findById(req.params.id)
+  await Post.findById(req.params.id)
     .then((result) => {
       postDetails.details = result;
       return Comment.find({ postId: req.params.id });
@@ -92,16 +94,15 @@ const like = async (req, res) => {
         postId: req.params.id,
       });
 
-      newLike.save().then(() => {
+      newLike.save().then(() =>
         Post.findByIdAndUpdate(req.params.id, {
           $inc: { likesCount: 1 },
-        }).catch((err) => res.send(err));
-        res.send("Post Liked!");
-      });
+        })
+      );
     })
-    .catch((err) => {
-      return res.status(400).send("Error " + err);
-    });
+    .then(() => res.send("Post Liked!"))
+    .catch((err) => res.send("Error " + err));
+  notifOnLike(req.user.name, query.postId).catch((err) => console.error(err));
 };
 const unlike = async (req, res) => {
   let query = { userId: req.user.id, postId: req.params.id };
