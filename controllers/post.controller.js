@@ -2,7 +2,12 @@ const Post = require("../models/post.schema");
 const Comment = require("../models/comments");
 const Likes = require("../models/likes");
 
-const { notifOnLike, notifOnComment } = require("./notifications");
+const {
+  notifOnLike,
+  notifOnComment,
+  notifOnUnlike,
+  notifOnUncomment,
+} = require("./notifications");
 
 //Posts Controller
 const getAllPost = (req, res) => {
@@ -120,6 +125,7 @@ const unlike = async (req, res) => {
     .catch((err) => {
       return res.status(400).send("Error " + err);
     });
+  notifOnUnlike(req.user.name, query.postId).catch((err) => console.error(err));
 };
 module.exports = {
   getAllPost,
