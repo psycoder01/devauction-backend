@@ -5,9 +5,22 @@ const Likes = require("../models/likes");
 const Comment = require("../models/comments");
 const main = require("../config/index");
 
+const { markRead } = require("./notifications");
+
 const findUser = (req, res) => {
-  User.find({ name: req.params.name })
-    .then((data) => res.send(data))
+  let data = {};
+  User.findOne(
+    { name: req.params.name },
+    { name: 1, email: 1, imgUrl: 1, createdAt: 1 }
+  )
+    .then((result) => {
+      data.userDetails = result;
+      return Post.find({ userId: result._id });
+    })
+    .then((result) => {
+      data.posts = result;
+      res.json(data);
+    })
     .catch((err) => res.status(400).send(err));
 };
 
@@ -67,5 +80,12 @@ const imageUpload = (req, res) => {
 
   return res.send("Avatar Updated Successfully");
 };
+const markAllRead = (req, res) => {
+  let notifIds = req.body;
 
-module.exports = { imageUpload, updateUser, deleteUser, getUser, findUser };
+  markRead(notifIds)
+    .then(() => res.send("Notifications Marked Read!"))
+    .catch((err) => res.send(err));
+};
+
+module.exports = { imageUpload, updateUser, deleteUser, getUser, findUser,markAllRead };

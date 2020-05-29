@@ -6,7 +6,7 @@ const {
   notifOnLike,
   notifOnComment,
   notifOnUnlike,
-  notifOnUncomment,
+  notifOnUncomment
 } = require("./notifications");
 
 //Posts Controller
@@ -135,6 +135,8 @@ const unlike = async (req, res) => {
     });
   notifOnUnlike(req.user.name, query.postId).catch((err) => console.error(err));
 };
+
+
 module.exports = {
   getAllPost,
   getPost,
@@ -143,5 +145,5 @@ module.exports = {
   addComment,
   removeComment,
   like,
-  unlike,
+  unlike
 };

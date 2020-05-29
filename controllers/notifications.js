@@ -81,9 +81,16 @@ const notifOnUncomment = async (from, to) => {
     console.log(err);
   }
 };
+const markRead = (notifIds) => {
+  return Notif.updateMany(
+    { _id: { $in: notifIds } },
+    { $set: { read: true } }
+  );
+};
 module.exports = {
   notifOnLike,
   notifOnComment,
   notifOnUnlike,
   notifOnUncomment,
+  markRead,
 };

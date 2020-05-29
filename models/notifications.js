@@ -15,7 +15,7 @@ const notificationSchema = new mong.Schema(
       required: true,
     },
     read: {
-      type: String,
+      type: Boolean,
       default: false,
     },
     postId: { type: String, required: true },
