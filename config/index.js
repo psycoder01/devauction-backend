@@ -1,3 +1,12 @@
-const main = "http://localhost:5000/";
+const dotenv = require('dotenv');
 
-module.exports =  main;
+//Enviroment Config
+dotenv.config();
+
+const variables = {
+  DB_URI : process.env.DB_URI,
+  TOKEN : process.env.TOKEN,
+  PORT : process.env.PORT
+}
+
+module.exports =  variables;
