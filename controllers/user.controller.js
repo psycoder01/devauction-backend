@@ -29,10 +29,6 @@ const getUser = async (req, res) => {
   User.findById(req.user.id)
     .then((data) => {
       userDetails.credentials = data;
-      return Likes.find({ userId: req.user.id });
-    })
-    .then((data) => {
-      userDetails.likes = data;
       res.json(userDetails);
     })
     .catch((err) => res.status(400).send("Error : " + err));
