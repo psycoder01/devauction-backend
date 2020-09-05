@@ -13,6 +13,10 @@ const postSchema = new mong.Schema(
       type: String,
       required: true
     },
+    authorName: {
+      type: String,
+      required: true
+    },
     likes: {
       type: [String]
     },

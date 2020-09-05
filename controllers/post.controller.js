@@ -1,17 +1,23 @@
 const Post = require("../models/post.schema");
-
-const {
-  notifOnLike,
-  notifOnComment,
-  notifOnUnlike,
-  notifOnUncomment
-} = require("./notifications");
+const User = require("../models/user.schema");
 
 //Posts Controller
 const getAllPost = (req, res) => {
+  let data = {};
+  let ids = [];
   Post.find()
-    .then(post => res.json(post))
-    .catch(err => res.statue(400).json("Server Error"));
+    .then(posts => {
+      data.post = posts;
+      posts.forEach(post => {
+        ids.push(post.author);
+      });
+      return User.find({ _id: { $in: ids } }, { name: 1, email: 1, imgUrl: 1 });
+    })
+    .then(result => {
+      data.author = result;
+      res.json(data);
+    })
+    .catch(err => res.status(400).json("Server Error"));
 };
 //Getting a single post details
 const getPost = (req, res) => {
@@ -25,7 +31,8 @@ const getPost = (req, res) => {
 const addPost = async (req, res) => {
   const newPost = new Post({
     content: req.body.content,
-    author: req.user.id
+    author: req.user.id,
+    authorName: await User.findById(req.user.id).then(item => item.name)
   });
 
   try {

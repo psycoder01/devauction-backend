@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const validator = require("./validation");
-const main = require('../config/index');
+const { IMG_STORE } = require("../config/index");
 
 const User = require("../models/user.schema");
 
@@ -27,7 +27,7 @@ const register = async (req, res) => {
     name: req.body.name,
     email: req.body.email,
     password: hashPass,
-    imgUrl : `${main}/public/default.jpg`
+    imgUrl: `${IMG_STORE}/public/default.jpg`
   });
 
   //Saving the user data
@@ -58,7 +58,7 @@ const login = async (req, res) => {
   if (!validPass) return res.status(400).send("Incorret Credentials!");
 
   //Token
-  const token = jwt.sign({ id: user._id ,name:user.name}, process.env.TOKEN);
+  const token = jwt.sign({ id: user._id, name: user.name }, process.env.TOKEN);
   res.header("authorization", token).send(token);
 };
 
