@@ -1,4 +1,3 @@
-const Notif = require("../models/notifications");
 const User = require("../models/user.schema");
 const Posts = require("../models/post.schema");
 

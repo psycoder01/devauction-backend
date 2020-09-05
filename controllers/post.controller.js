@@ -1,6 +1,4 @@
 const Post = require("../models/post.schema");
-const Comment = require("../models/comments");
-const Likes = require("../models/likes");
 
 const {
   notifOnLike,
@@ -12,29 +10,22 @@ const {
 //Posts Controller
 const getAllPost = (req, res) => {
   Post.find()
-    .then((post) => res.json(post))
-    .catch((err) => res.json("Error : " + err));
+    .then(post => res.json(post))
+    .catch(err => res.statue(400).json("Server Error"));
 };
 //Getting a single post details
-const getPost = async (req, res) => {
-  let postDetails = {};
-  await Post.findById(req.params.id)
-    .then((result) => {
-      postDetails.details = result;
-      return Comment.find({ postId: req.params.id });
+const getPost = (req, res) => {
+  Post.findById(req.params.id)
+    .then(result => {
+      res.json(result);
     })
-    .then((result) => {
-      postDetails.comments = result.sort((a, b) => b.createdAt - a.createdAt);
-      res.json(postDetails);
-    })
-    .catch((err) => res.status(400).send("Error : " + err));
+    .catch(err => res.status(400).send("Server Error"));
 };
 //Adding a post
 const addPost = async (req, res) => {
   const newPost = new Post({
-    title: req.body.title,
-    description: req.body.description,
-    userId: req.user.id,
+    content: req.body.content,
+    author: req.user.id
   });
 
   try {
@@ -48,94 +39,54 @@ const addPost = async (req, res) => {
 //Delete post
 const deletePost = (req, res) => {
   Post.findByIdAndDelete(req.params.id)
-    .then(() =>
-      Promise.all([
-        Likes.deleteMany({ postId: req.params.id }),
-        Comment.deleteMany({ postId: req.params.id }),
-      ])
-    )
     .then(() => res.send("Post deleted successfully"))
-    .catch((err) => res.status(400).send("Error " + err));
+    .catch(err => res.status(400).send("Server Error"));
 };
 
 //Comment Controllers
 const addComment = (req, res) => {
-  const newComment = new Comment({
-    body: req.body.body,
-    userId: req.user.id,
-    postId: req.params.id,
-  });
-
-  newComment
-    .save()
-    .then(() => {
-      Post.findByIdAndUpdate(req.params.id, {
-        $inc: { commentsCount: 1 },
-      }).catch((err) => res.send(err));
-      res.send("Comment Added");
-    })
-    .catch((err) => res.status(400).send("Error : " + err));
-
-  notifOnComment(req.user.name, req.params.id).catch((err) =>
-    console.error(err)
-  );
+  let commenter = {
+    commenterId: req.user.id,
+    comment: req.body.comment
+  };
+  Post.findByIdAndUpdate(req.params.id, {
+    $inc: { commentsCount: 1 },
+    $push: { comments: commenter }
+  })
+    .then(() => res.send("Comment Added!"))
+    .catch(err => res.status(400).send("Server Error"));
 };
-const removeComment = async (req, res) => {
-  Comment.findOneAndDelete({ body: req.body.body })
-    .then(() => {
-      Post.findByIdAndUpdate(req.params.id, {
-        $inc: { commentsCount: -1 },
-      }).catch((err) => res.send(err));
-      res.send("Comment Removed");
-    })
-    .catch((err) => res.send(err));
 
-  notifOnUncomment(req.user.name, req.params.id).catch((err) =>
-    console.error(err)
-  );
+const removeComment = async (req, res) => {
+  Post.findByIdAndUpdate(req.params.id, {
+    $inc: { commentsCount: -1 },
+    $pull: {
+      comments: {
+        commenterId: req.user.id
+      }
+    }
+  })
+    .then(() => res.send("Commnet Deleted!"))
+    .catch(err => res.status(400).send("Server Error"));
 };
 
 //Likes controller
-const like = async (req, res) => {
-  let query = { userId: req.user.id, postId: req.params.id };
-  await Likes.find(query)
-    .then((item) => {
-      if (item.length > 0) return res.status(400).send("Already Liked");
-
-      const newLike = new Likes({
-        userId: req.user.id,
-        postId: req.params.id,
-      });
-
-      newLike.save().then(() =>
-        Post.findByIdAndUpdate(req.params.id, {
-          $inc: { likesCount: 1 },
-        })
-      );
-    })
+const like = (req, res) => {
+  Post.findByIdAndUpdate(req.params.id, {
+    $inc: { likesCount: 1 },
+    $addToSet: { likes: req.user.id }
+  })
     .then(() => res.send("Post Liked!"))
-    .catch((err) => res.send("Error " + err));
-  notifOnLike(req.user.name, query.postId).catch((err) => console.error(err));
+    .catch(err => res.statue(400).send("Server Error"));
 };
 const unlike = async (req, res) => {
-  let query = { userId: req.user.id, postId: req.params.id };
-  await Likes.find(query)
-    .then((item) => {
-      if (item.length > 0)
-        return Likes.findByIdAndDelete(item[0]._id).then(() => {
-          Post.findByIdAndUpdate(req.params.id, {
-            $inc: { likesCount: -1 },
-          }).catch((err) => res.send(err));
-          res.send("Post Disliked");
-        });
-      return res.status(400).send("Post not found");
-    })
-    .catch((err) => {
-      return res.status(400).send("Error " + err);
-    });
-  notifOnUnlike(req.user.name, query.postId).catch((err) => console.error(err));
+  Post.findByIdAndUpdate(req.params.id, {
+    $inc: { likesCount: -1 },
+    $pull: { likes: req.user.id }
+  })
+    .then(() => res.send("Post DisLiked!"))
+    .catch(err => res.statue(400).send("Server Error"));
 };
-
 
 module.exports = {
   getAllPost,
