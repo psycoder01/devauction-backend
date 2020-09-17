@@ -21,6 +21,22 @@ const getUser = async (req, res) => {
     .catch(err => res.status(400).send("Server Error ! "));
 };
 
+const getUsers = async (req, res) => {
+  try {
+    const ids = req.body.userIds;
+    const data = await User.find(
+      {
+        _id: { $in: ids }
+      },
+      { name: 1, imgUrl: 1 }
+    );
+    res.json(data);
+  } catch (err) {
+    console.log(err);
+    res.status(400).send("Server Error!");
+  }
+};
+
 //Updating User Details
 const updateUser = (req, res) => {
   let userDetails = {};
@@ -71,5 +87,6 @@ module.exports = {
   updateUser,
   deleteUser,
   getUser,
-  findUser
+  findUser,
+  getUsers
 };

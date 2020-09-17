@@ -25,7 +25,13 @@ const postSchema = new mong.Schema(
       default: 0
     },
     comments: {
-      type: [{ commenterId: String, comment: String }]
+      type: [
+        {
+          _id: mong.Schema.Types.ObjectId,
+          commenterId: String,
+          comment: String
+        }
+      ]
     },
     commentsCount: {
       type: Number,

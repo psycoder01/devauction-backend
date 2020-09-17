@@ -1,5 +1,6 @@
 const Post = require("../models/post.schema");
 const User = require("../models/user.schema");
+const mongoose = require("mongoose");
 
 //Posts Controller
 const getAllPost = (req, res) => {
@@ -53,6 +54,7 @@ const deletePost = (req, res) => {
 //Comment Controllers
 const addComment = (req, res) => {
   let commenter = {
+    _id: mongoose.Types.ObjectId(),
     commenterId: req.user.id,
     comment: req.body.comment
   };
@@ -60,7 +62,7 @@ const addComment = (req, res) => {
     $inc: { commentsCount: 1 },
     $push: { comments: commenter }
   })
-    .then(() => res.send("Comment Added!"))
+    .then(() => res.send(commenter))
     .catch(err => res.status(400).send("Server Error"));
 };
 
@@ -69,7 +71,7 @@ const removeComment = async (req, res) => {
     $inc: { commentsCount: -1 },
     $pull: {
       comments: {
-        commenterId: req.user.id
+        _id: req.body.commentId
       }
     }
   })
@@ -84,7 +86,7 @@ const like = (req, res) => {
     $addToSet: { likes: req.user.id }
   })
     .then(() => res.send("Post Liked!"))
-    .catch(err => res.statue(400).send("Server Error"));
+    .catch(err => res.status(400).send("Server Error"));
 };
 const unlike = async (req, res) => {
   Post.findByIdAndUpdate(req.params.id, {
@@ -92,7 +94,7 @@ const unlike = async (req, res) => {
     $pull: { likes: req.user.id }
   })
     .then(() => res.send("Post DisLiked!"))
-    .catch(err => res.statue(400).send("Server Error"));
+    .catch(err => res.status(400).send("Server Error"));
 };
 
 module.exports = {

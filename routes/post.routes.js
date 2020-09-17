@@ -20,7 +20,7 @@ router.get("/:id", getPost);
 
 //Comment routes
 router.post("/:id/comment", verify, addComment);
-router.delete("/:id/uncomment", verify, removeComment);
+router.post("/:id/uncomment", verify, removeComment);
 
 //Like And Unlike Routes
 router.post("/:id/like", verify, like);
