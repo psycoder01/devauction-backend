@@ -38,7 +38,7 @@ const addPost = async (req, res) => {
 
   try {
     await newPost.save();
-    res.send("Post Added");
+    res.json(newPost);
   } catch (err) {
     res.status(400).send("Error : " + err);
   }
